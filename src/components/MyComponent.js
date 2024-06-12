@@ -32,15 +32,21 @@ class MyComponent extends React.Component {
     // JSX
     render() {
         return (
-            <div>
-                <AddUserInfor
-                    handleAddNewUser={this.handleAddNewUser} //Không dùng () vì nó sẽ hiểu là thực thi hàm ngay tại đây
-                />
-                <br />
-                <DisplayInfor 
-                    listUsers={this.state.listUsers}
-                />
-            </div>
+            <>
+                <div className='a'>
+                    <AddUserInfor
+                        handleAddNewUser={this.handleAddNewUser} //Không dùng () vì nó sẽ hiểu là thực thi hàm ngay tại đây
+                    />
+                    <br />
+                    <DisplayInfor 
+                        listUsers={this.state.listUsers}
+                    />
+                </div>
+                <div className='b'>
+
+                </div>
+            </>
+            
         );
     }
 }
