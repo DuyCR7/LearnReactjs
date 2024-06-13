@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './DisplayInfor.scss';
 import logo from '../logo.svg';
 
@@ -18,33 +18,44 @@ const DisplayInfor = (props) => {
         setShowHide(!isShow);
     }
 
-        return(
-            <div className='display-infor-container'>
-                <div>
-                    <button onClick={() => { handleShowHide() }}>
-                       { isShow === true ? 'Hide' : 'Show' }
-                    </button>
-                </div>
-                { isShow && 
-                    <>
-                        { listUsers.map((user) => {
-                            return (
-                                <div key={user.id} className={user.age > 21 ? 'green' : 'red'}>
-                                    <div>
-                                        <div>My name is {user.name} </div>
-                                        <div>My age is {user.age} </div>
-                                    </div>
-                                    <div>
-                                        <button onClick={() => {props.handeleDeleteUser(user.id)}}>Delete</button>
-                                    </div>
-                                    <hr />
-                                </div>
-                            )
-                        }) }
-                    </> 
-                }
+    console.log('Call me render');
+
+    // [] để hàm này chỉ chạy 1 lần
+    // còn nếu truyền giá trị thì hàm này lại chạy lại
+    useEffect(() => {
+        if(listUsers.length === 0){
+            alert('You deleted all users');
+        }
+        console.log('Call me useEffect');
+    }, [listUsers]);
+
+    return(
+        <div className='display-infor-container'>
+            <div>
+                <button onClick={() => { handleShowHide() }}>
+                   { isShow === true ? 'Hide' : 'Show' }
+                </button>
             </div>
-        )
+            { isShow && 
+                <>
+                    { listUsers.map((user) => {
+                        return (
+                            <div key={user.id} className={user.age > 21 ? 'green' : 'red'}>
+                                <div>
+                                    <div>My name is {user.name} </div>
+                                    <div>My age is {user.age} </div>
+                                </div>
+                                <div>
+                                    <button onClick={() => {props.handeleDeleteUser(user.id)}}>Delete</button>
+                                </div>
+                                <hr />
+                            </div>
+                        )
+                    }) }
+                </> 
+            }
+        </div>
+    )
 }
 
 export default DisplayInfor;
