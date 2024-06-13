@@ -1,10 +1,69 @@
-import React from "react";
+import React, { useState } from "react";
 import AddUserInfor from "./AddUserInfor";
 import DisplayInfor from "./DisplayInfo";
 
-class MyComponent extends React.Component {
-    state = {
-        listUsers: [
+// class MyComponent extends React.Component {
+//     state = {
+//         listUsers: [
+//             {
+//                 id: 1,
+//                 name: 'Duy',
+//                 age: 20
+//             },
+//             {
+//                 id: 2,
+//                 name: 'Siu',
+//                 age: 22
+//             },
+//             {
+//                 id: 3,
+//                 name: 'Cristiano',
+//                 age: 39
+//             }
+//         ]
+//     }
+
+//     handleAddNewUser = (userObj) => {
+//         this.setState({
+//             listUsers: [userObj, ...this.state.listUsers]
+//         })
+//     }
+
+//     handeleDeleteUser = (userId) => {
+//         let listUsersClone = [...this.state.listUsers];
+//         listUsersClone = listUsersClone.filter(item => item.id !== userId);
+//         this.setState({
+//             listUsers: listUsersClone
+//         })
+//     }
+
+//     // JSX
+//     render() {
+//         return (
+//             <>
+//                 <div className='a'>
+//                     <AddUserInfor
+//                         handleAddNewUser={this.handleAddNewUser} //Không dùng () vì nó sẽ hiểu là thực thi hàm ngay tại đây
+//                     />
+//                     <br />
+//                     <DisplayInfor 
+//                         listUsers={this.state.listUsers}
+//                         handeleDeleteUser={this.handeleDeleteUser}
+//                     />
+//                 </div>
+//                 <div className='b'>
+
+//                 </div>
+//             </>
+            
+//         );
+//     }
+// }
+
+
+const MyComponent = (props) => {
+    const [listUsers, setListUsers] = useState(
+        [
             {
                 id: 1,
                 name: 'Duy',
@@ -21,43 +80,35 @@ class MyComponent extends React.Component {
                 age: 39
             }
         ]
+    );
+
+    const handleAddNewUser = (userObj) => {
+        setListUsers([userObj,...listUsers])
     }
 
-    handleAddNewUser = (userObj) => {
-        this.setState({
-            listUsers: [userObj, ...this.state.listUsers]
-        })
-    }
-
-    handeleDeleteUser = (userId) => {
-        let listUsersClone = [...this.state.listUsers];
+    const handeleDeleteUser = (userId) => {
+        let listUsersClone = [...listUsers];
         listUsersClone = listUsersClone.filter(item => item.id !== userId);
-        this.setState({
-            listUsers: listUsersClone
-        })
+        setListUsers(listUsersClone);
     }
 
-    // JSX
-    render() {
-        return (
-            <>
-                <div className='a'>
-                    <AddUserInfor
-                        handleAddNewUser={this.handleAddNewUser} //Không dùng () vì nó sẽ hiểu là thực thi hàm ngay tại đây
-                    />
-                    <br />
-                    <DisplayInfor 
-                        listUsers={this.state.listUsers}
-                        handeleDeleteUser={this.handeleDeleteUser}
-                    />
-                </div>
-                <div className='b'>
+    return (
+        <>
+            <div className='a'>
+                <AddUserInfor
+                    handleAddNewUser={handleAddNewUser} //Không dùng () vì nó sẽ hiểu là thực thi hàm ngay tại đây
+                />
+                <br />
+                <DisplayInfor 
+                    listUsers={listUsers}
+                    handeleDeleteUser={handeleDeleteUser}
+                />
+            </div>
+            <div className='b'>
 
-                </div>
-            </>
-            
-        );
-    }
+            </div>
+        </>        
+    );
 }
 
 export default MyComponent;
