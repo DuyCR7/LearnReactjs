@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import './DisplayInfor.scss';
 import logo from '../logo.svg';
 
@@ -59,9 +59,26 @@ import logo from '../logo.svg';
 // không cần constructor, không còn this
 const DisplayInfor = (props) => {
     const { listUsers } = props; // destructuring props
+
+    // useState trả ra 2 tham số
+    // tham số đầu tiên là state ta khai báo
+    // tham số thứ hai là hàm để cập nhật state
+    // khai báo là const để state chỉ có thể thay đổi khi gọi thông qua setShowHide
+    // destructuring
+    const [isShow, setShowHide] = useState(true);
+
+    const handleShowHide = () => {
+        setShowHide(!isShow);
+    }
+
         return(
             <div className='display-infor-container'>
-                { true && 
+                <div>
+                    <button onClick={() => { handleShowHide() }}>
+                       { isShow === true ? 'Hide' : 'Show' }
+                    </button>
+                </div>
+                { isShow && 
                     <>
                         { listUsers.map((user) => {
                             return (
