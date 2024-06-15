@@ -2,17 +2,25 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
+import axios from "axios";
 
-const ModalCreateUser = () => {
-  const [show, setShow] = useState(false);
+const ModalCreateUser = (props) => {
+  const { showModalCreateUser, setShowModalCreateUser } = props;
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    setShowModalCreateUser(false);
+    setEmail("");
+    setPassword("");
+    setUsername("");
+    setRole("USER");
+    setImage("");
+    setPreviewImage("");
+  }
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [role, setRole] = useState("USER")
+  const [role, setRole] = useState("USER");
   const [image, setImage] = useState("");
   const [previewImage, setPreviewImage] = useState("");
 
@@ -21,19 +29,37 @@ const ModalCreateUser = () => {
       setPreviewImage(URL.createObjectURL(event.target.files[0]));
       setImage(event.target.files[0]);
     } else {
-      
     }
+  };
 
-  }
+  const handleSubmitCreateUser = async () => {
+    // validate
+
+    // call api method
+    // let data = {
+    //   email: email,
+    //   password: password,
+    //   username: username,
+    //   role: role,
+    //   userImage: image,
+    // };
+
+    // sử dụng file nên truyền qua formdata
+    const data = new FormData();
+    data.append("email", email);
+    data.append("password", password);
+    data.append("username", username);
+    data.append("role", role);
+    data.append("userImage", image);
+
+    let response = await axios.post("http://localhost:8081/api/v1/participant", data);
+    console.log("Check response: ", response);
+  };
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button>
-
       <Modal
-        show={show}
+        show={showModalCreateUser}
         onHide={handleClose}
         size="xl"
         backdrop="static"
@@ -46,7 +72,12 @@ const ModalCreateUser = () => {
           <form className="row g-3">
             <div className="col-md-6">
               <label className="form-label">Email</label>
-              <input type="email" className="form-control" value={email} onChange={(event) => setEmail(event.target.value)} />
+              <input
+                type="email"
+                className="form-control"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
             </div>
             <div className="col-md-6">
               <label className="form-label">Password</label>
@@ -59,14 +90,21 @@ const ModalCreateUser = () => {
             </div>
             <div className="col-md-6">
               <label className="form-label">Username</label>
-              <input type="text" className="form-control" value={username} onChange={(event) => setUsername(event.target.value)}/>
+              <input
+                type="text"
+                className="form-control"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+              />
             </div>
             <div className="col-md-6">
               <label className="form-label">Role</label>
-              <select className="form-select" onChange={(event) => setRole(event.target.value)}>
-                <option value="USER">
-                  USER
-                </option>
+              <select
+                className="form-select"
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+              >
+                <option value="USER">USER</option>
                 <option value="ADMIN">ADMIN</option>
               </select>
             </div>
@@ -74,15 +112,19 @@ const ModalCreateUser = () => {
               <label className="form-label label-upload" htmlFor="LabelUpload">
                 <FcPlus /> Upload File Image
               </label>
-              <input type="file" id="LabelUpload" hidden onChange={(event) => handleUploadImage(event)}/>
+              <input
+                type="file"
+                id="LabelUpload"
+                hidden
+                onChange={(event) => handleUploadImage(event)}
+              />
             </div>
             <div className="col-md-12 img-preview">
-              {previewImage ?
+              {previewImage ? (
                 <img src={previewImage} alt={previewImage} />
-                :
+              ) : (
                 <span>Preview Image</span>
-              }
-              
+              )}
             </div>
           </form>
         </Modal.Body>
@@ -90,7 +132,7 @@ const ModalCreateUser = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={() => handleSubmitCreateUser()}>
             Save
           </Button>
         </Modal.Footer>
