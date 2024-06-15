@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FcPlus } from "react-icons/fc";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ModalCreateUser = (props) => {
   const { showModalCreateUser, setShowModalCreateUser } = props;
@@ -32,8 +33,26 @@ const ModalCreateUser = (props) => {
     }
   };
 
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const handleSubmitCreateUser = async () => {
     // validate
+    const isValidEmail = validateEmail(email);
+    if (!isValidEmail) {
+      toast.warning("Email is invalid");
+      return;
+    }
+
+    if (!password) {
+      toast.warning("Password is invalid");
+      return;
+    }
 
     // call api method
     // let data = {
@@ -53,7 +72,16 @@ const ModalCreateUser = (props) => {
     data.append("userImage", image);
 
     let response = await axios.post("http://localhost:8081/api/v1/participant", data);
-    console.log("Check response: ", response);
+    console.log("Check response: ", response.data);
+    
+    if (response.data && response.data.EC === 0) {
+      toast.success(response.data.EM);
+      handleClose();
+    }
+
+    if (response.data && response.data.EC !== 0) {
+      toast.error(response.data.EM);
+    }
   };
 
   return (
