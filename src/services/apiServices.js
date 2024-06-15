@@ -1,15 +1,19 @@
 import axios from "../utils/axiosCustomize";
 
 const postCreateNewUser = (email, password, username, role, image) => {
-    // sử dụng file nên truyền qua formdata
-    const data = new FormData();
-    data.append("email", email);
-    data.append("password", password);
-    data.append("username", username);
-    data.append("role", role);
-    data.append("userImage", image);
+  // sử dụng file nên truyền qua formdata
+  const data = new FormData();
+  data.append("email", email);
+  data.append("password", password);
+  data.append("username", username);
+  data.append("role", role);
+  data.append("userImage", image);
 
-    return axios.post("api/v1/participant", data);
-}
+  return axios.post("api/v1/participant", data);
+};
 
-export { postCreateNewUser }
+const getAllUsers = () => {
+  return axios.get("api/v1/participant/all");
+};
+
+export { postCreateNewUser, getAllUsers };
