@@ -2,8 +2,19 @@
     .header {
         height: 45px;
         text-align: right;
+        padding: 5px 100px 0 100px;
 
-        border: 1px solid red;
+        button {
+            padding: 3px 15px;
+            margin-left: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+            border: 1px solid;
+
+            &:hover {
+                background: white;
+            }
+        }
     }
 
     .title {
@@ -30,6 +41,16 @@
 
         .btn-login {
             width: 100%;
+        }
+        
+        .forgot-password {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .back {
+            cursor: pointer;
+            text-decoration: underline;
         }
     }
 }
