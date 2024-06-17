@@ -32,6 +32,7 @@ instance.interceptors.response.use(
     return response && response.data ? response.data : response;
   },
   function (error) {
+    nProgress.done();
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     return error && error.response && error.response.data 
