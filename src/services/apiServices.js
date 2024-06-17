@@ -48,14 +48,19 @@ const postRegister = (email, password, username) => {
   });
 };
 
-// Get Quiz
+// GET Quiz
 const getQuizByUser = () => {
   return axios.get("api/v1/quiz-by-participant");
 }
 
-// Get data quiz
+// GET data quiz
 const getDataQuiz = (quizId) => {
   return axios.get(`api/v1/quiz-with-qa/${quizId}`);
+}
+
+// POST submit quiz
+const postSubmitQuiz = (data) => {
+  return axios.post("api/v1/quiz-submit", {...data}); // dạng raw data
 }
 
 export {
@@ -67,5 +72,6 @@ export {
   postLogin,
   postRegister,
   getQuizByUser,
-  getDataQuiz
+  getDataQuiz,
+  postSubmitQuiz
 };
