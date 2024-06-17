@@ -3,6 +3,7 @@ import { useParams, useLocation } from "react-router-dom";
 import { getDataQuiz } from "../../services/apiServices";
 import "./DetailQuiz.scss";
 import Question from "./Question";
+import _ from "lodash";
 
 const DetailQuiz = (props) => {
   const params = useParams();
@@ -18,7 +19,14 @@ const DetailQuiz = (props) => {
 
   const fetchQuestions = async () => {
     let response = await getDataQuiz(quizId);
-    setDataQuiz(response.DT.qa);
+    let data = response.DT.qa;
+    data.forEach((item) => {
+        let temps = item.answers;
+        temps.forEach((temp) => {
+            temp.isSelected = false;
+        })
+    })
+    setDataQuiz(data);
   };
 
   console.log("check data quiz", dataQuiz);
@@ -36,6 +44,25 @@ const DetailQuiz = (props) => {
     }
   }
 
+  const handleCheckboxParent = (answerId, questionId) => {
+    let dataQuizClone = _.cloneDeep(dataQuiz);
+    let question = dataQuizClone.find((item) => +item.id === +questionId);
+    if(question && question.answers){
+        question.answers = question.answers.map((item) => {
+            if(+item.id === +answerId){
+                item.isSelected = !item.isSelected;
+            }
+            return item;
+        })
+
+    }
+    let index = dataQuizClone.findIndex(item => +item.id === +questionId);
+    if(index > -1){
+        dataQuizClone[index] = question;
+        setDataQuiz(dataQuizClone);
+    }
+  }
+
   return (
     <div className="detail-quiz-container">
       <div className="left-content">
@@ -50,11 +77,13 @@ const DetailQuiz = (props) => {
           <Question
             index={index}
             data={dataQuiz && dataQuiz.length > 0 ? dataQuiz[index] : []}
+            handleCheckboxParent={handleCheckboxParent}
           />
         </div>
         <div className="footer">
           <button className="btn btn-secondary" onClick={() => handlePrev()}>Prev</button>
           <button className="btn btn-primary" onClick={() => handleNext()}>Next</button>
+          <button className="btn btn-warning" onClick={() => handleNext()}>Finish</button>
         </div>
       </div>
       <div className="right-content">count down</div>
