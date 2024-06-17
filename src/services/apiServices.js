@@ -48,6 +48,11 @@ const postRegister = (email, password, username) => {
   });
 };
 
+// Get Quiz
+const getQuizByUser = () => {
+  return axios.get("api/v1/quiz-by-participant");
+}
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -55,5 +60,6 @@ export {
   deleteUser,
   getUserWithPaginate,
   postLogin,
-  postRegister
+  postRegister,
+  getQuizByUser
 };
