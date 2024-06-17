@@ -53,6 +53,11 @@ const getQuizByUser = () => {
   return axios.get("api/v1/quiz-by-participant");
 }
 
+// Get data quiz
+const getDataQuiz = (quizId) => {
+  return axios.get(`api/v1/quiz-with-qa/${quizId}`);
+}
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -61,5 +66,6 @@ export {
   getUserWithPaginate,
   postLogin,
   postRegister,
-  getQuizByUser
+  getQuizByUser,
+  getDataQuiz
 };
