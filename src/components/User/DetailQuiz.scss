@@ -83,6 +83,14 @@
                 &:hover {
                     color: red;
                 }
+
+                &.selected {
+                    background-color: rgb(171, 220, 171);
+                    border: 1px solid green;
+                }
+                &.clicked {
+                    border: 1px solid red;
+                }
             }
         }
     }
