@@ -18,7 +18,7 @@ const TableQuiz = (props) => {
   return (
     <>
     <h3 className="text-left">List Quiz</h3>
-      <table className="table table-bordered table-hover mt-2">
+      <table className="table table-bordered table-hover my-2">
         <thead>
           <tr>
             <th scope="col">ID</th>
