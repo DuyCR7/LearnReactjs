@@ -12,15 +12,10 @@ import {
   postCreateNewQuestionForQuiz,
   postCreateNewAnswerForQuestion,
 } from "../../../../services/apiServices";
+import { toast } from "react-toastify";
 
 const Questions = (props) => {
-  //   const options = [
-  //     { value: "EASY", label: "EASY" },
-  //     { value: "MEDIUM", label: "MEDIUM" },
-  //     { value: "HARD", label: "HARD" },
-  //   ];
-
-  const [questions, setQuestions] = useState([
+  const initQuestions = [
     {
       id: uuidv4(),
       description: "",
@@ -34,7 +29,8 @@ const Questions = (props) => {
         },
       ],
     },
-  ]);
+  ];
+  const [questions, setQuestions] = useState(initQuestions);
 
   const [isPreviewImage, setIsPreviewImage] = useState(false);
   const [dataImagePreview, setDataImagePreview] = useState({
@@ -184,29 +180,71 @@ const Questions = (props) => {
 
   const handleSubmitQuestionForQuiz = async () => {
     // validate data
+    if (_.isEmpty(selectedQuiz)) {
+      toast.error("Please choose a Quiz");
+      return;
+    }
+
+    // validate questions
+    let isValidQuestion = true;
+    let indexQuestion1 = 0;
+    for (let i = 0; i < questions.length; i++) {
+      if (!questions[i].description) {
+        isValidQuestion = false;
+        indexQuestion1 = i;
+        break;
+      }
+    }
+    if (isValidQuestion === false) {
+      toast.error(`Not empty description Question ${indexQuestion1 + 1}`);
+      return;
+    }
+
+    // validate answers
+    let isValidAnswer = true;
+    let indexQuestion2 = 0,
+      indexAnswer = 0;
+    for (let i = 0; i < questions.length; i++) {
+      for (let j = 0; j < questions[i].answers.length; j++) {
+        if (!questions[i].answers[j].description) {
+          isValidAnswer = false;
+          indexAnswer = j;
+          break;
+        }
+      }
+      indexQuestion2 = i;
+      if (isValidAnswer === false) break;
+    }
+
+    if (isValidAnswer === false) {
+      toast.error(
+        `Not empty Answer ${indexAnswer + 1} at Question ${indexQuestion2 + 1}`
+      );
+      return;
+    }
 
     // console.log("Check questions: ", questions, selectedQuiz);
 
+    // Chạy theo trình tự, Promise.all() chạy song song
     // submit questions
-    await Promise.all(
-      questions.map(async (question) => {
-        const q = await postCreateNewQuestionForQuiz(
-          +selectedQuiz.value,
-          question.description,
-          question.imageFile
+    for (const question of questions) {
+      const q = await postCreateNewQuestionForQuiz(
+        +selectedQuiz.value,
+        question.description,
+        question.imageFile
+      );
+      // submit answers
+      for (const answer of question.answers) {
+        await postCreateNewAnswerForQuestion(
+          answer.description,
+          answer.isCorrect,
+          q.DT.id
         );
+      }
+    }
 
-        // submit answers
-        await Promise.all(question.answers.map(async (answer) => {
-            await postCreateNewAnswerForQuestion(
-                answer.description, answer.isCorrect, q.DT.id
-            );
-        }))
-        console.log("Chekc q:", q);
-      })
-    );
-
-    // submit answers
+    toast.success("Create questions and answers successfully");
+    setQuestions(initQuestions);
   };
 
   return (
