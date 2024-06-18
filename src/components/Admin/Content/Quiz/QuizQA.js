@@ -11,6 +11,7 @@ import {
   getAllQuizzesForAdmin,
   postCreateNewQuestionForQuiz,
   postCreateNewAnswerForQuestion,
+  getQuizWithQA,
 } from "../../../../services/apiServices";
 import { toast } from "react-toastify";
 
@@ -59,6 +60,12 @@ const QuizQA = (props) => {
     fetchQuiz();
   }, []);
 
+  useEffect(() => {
+    if (selectedQuiz && selectedQuiz.value) {
+      fetchQuizzWithQA();
+    }
+  }, [selectedQuiz]);
+
   const fetchQuiz = async () => {
     let response = await getAllQuizzesForAdmin();
     if (response && response.EC === 0) {
@@ -69,6 +76,46 @@ const QuizQA = (props) => {
         };
       });
       setListQuiz(newQuizzes);
+    }
+  };
+
+  // return a promise that resolves with a File instance
+  function urltoFile(url, filename, mimeType) {
+    if (url.startsWith("data:")) {
+      var arr = url.split(","),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[arr.length - 1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      var file = new File([u8arr], filename, { type: mime || mimeType });
+      return Promise.resolve(file);
+    }
+    return fetch(url)
+      .then((res) => res.arrayBuffer())
+      .then((buf) => new File([buf], filename, { type: mimeType }));
+  }
+
+  
+
+  const fetchQuizzWithQA = async () => {
+    let response = await getQuizWithQA(selectedQuiz.value);
+    if (response && response.EC === 0) {
+      // convert base64 to file Object
+      let newQAs = [];
+      for(let i=0; i< response.DT.qa.length; i++) {
+        let q = response.DT.qa[i];
+        if(q.imageFile){
+          q.imageName = `Question-${q.id}.png`;
+          q.imageFile = await urltoFile(`data:image/png;base64,${q.imageFile}`, `Question-${q.id}.png`,'image/png');
+        }
+        newQAs.push(q);
+      }
+
+      setQuestions(newQAs);
+      console.log(newQAs);
     }
   };
 
