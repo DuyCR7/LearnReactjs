@@ -10,6 +10,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "nprogress/nprogress.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
+import 'react-18-image-lightbox/src/style.css';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
