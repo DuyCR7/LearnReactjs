@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { BsFillPatchPlusFill, BsFillPatchMinusFill } from "react-icons/bs";
 import { AiFillPlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
@@ -7,15 +7,18 @@ import "./Questions.scss";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 import Lightbox from "react-18-image-lightbox";
+import {
+  getAllQuizzesForAdmin,
+  postCreateNewQuestionForQuiz,
+  postCreateNewAnswerForQuestion,
+} from "../../../../services/apiServices";
 
 const Questions = (props) => {
-  const options = [
-    { value: "EASY", label: "EASY" },
-    { value: "MEDIUM", label: "MEDIUM" },
-    { value: "HARD", label: "HARD" },
-  ];
-
-  const [selectedQuiz, setSelectedQuiz] = useState({});
+  //   const options = [
+  //     { value: "EASY", label: "EASY" },
+  //     { value: "MEDIUM", label: "MEDIUM" },
+  //     { value: "HARD", label: "HARD" },
+  //   ];
 
   const [questions, setQuestions] = useState([
     {
@@ -35,8 +38,8 @@ const Questions = (props) => {
 
   const [isPreviewImage, setIsPreviewImage] = useState(false);
   const [dataImagePreview, setDataImagePreview] = useState({
-    title: '',
-    url: '',
+    title: "",
+    url: "",
   });
 
   const handlePreviewImage = (questionId) => {
@@ -45,13 +48,33 @@ const Questions = (props) => {
       (question) => question.id === questionId
     );
     if (index > -1) {
-        setDataImagePreview({
-          title: questionsClone[index].imageName,
-          url: URL.createObjectURL(questionsClone[index].imageFile),
-        });
-        setIsPreviewImage(true);
+      setDataImagePreview({
+        title: questionsClone[index].imageName,
+        url: URL.createObjectURL(questionsClone[index].imageFile),
+      });
+      setIsPreviewImage(true);
     }
-  }
+  };
+
+  const [listQuiz, setListQuiz] = useState([]);
+  const [selectedQuiz, setSelectedQuiz] = useState({});
+
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
+
+  const fetchQuiz = async () => {
+    let response = await getAllQuizzesForAdmin();
+    if (response && response.EC === 0) {
+      let newQuizzes = response.DT.map((item) => {
+        return {
+          value: item.id,
+          label: `${item.id}. ${item.description}`,
+        };
+      });
+      setListQuiz(newQuizzes);
+    }
+  };
 
   const handleAddRemoveQuestion = (type, id) => {
     if (type === "ADD") {
@@ -159,8 +182,31 @@ const Questions = (props) => {
     }
   };
 
-  const handleSubmitQuestionForQuiz = () => {
-    console.log("Check questions: ", questions);
+  const handleSubmitQuestionForQuiz = async () => {
+    // validate data
+
+    // console.log("Check questions: ", questions, selectedQuiz);
+
+    // submit questions
+    await Promise.all(
+      questions.map(async (question) => {
+        const q = await postCreateNewQuestionForQuiz(
+          +selectedQuiz.value,
+          question.description,
+          question.imageFile
+        );
+
+        // submit answers
+        await Promise.all(question.answers.map(async (answer) => {
+            await postCreateNewAnswerForQuestion(
+                answer.description, answer.isCorrect, q.DT.id
+            );
+        }))
+        console.log("Chekc q:", q);
+      })
+    );
+
+    // submit answers
   };
 
   return (
@@ -171,7 +217,7 @@ const Questions = (props) => {
         <div className="col-6 form-group">
           <label className="mb-2">Select Quiz:</label>
           <Select
-            options={options}
+            options={listQuiz}
             value={selectedQuiz}
             defaultValue={selectedQuiz}
             onChange={setSelectedQuiz}
