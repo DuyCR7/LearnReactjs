@@ -115,7 +115,6 @@ const QuizQA = (props) => {
       }
 
       setQuestions(newQAs);
-      console.log(newQAs);
     }
   };
 

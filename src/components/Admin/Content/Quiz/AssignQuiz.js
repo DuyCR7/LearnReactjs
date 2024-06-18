@@ -16,6 +16,9 @@ const AssignQuiz = (props) => {
 
   useEffect(() => {
     fetchQuiz();
+  }, [props.listQuiz]);
+
+  useEffect(() => {
     fetchUser();
   }, []);
 
