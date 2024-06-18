@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./ManageQuiz.scss";
 import Select from "react-select";
 import { postCreateNewQuiz } from "../../../../services/apiServices";
 import { toast } from "react-toastify";
 import TableQuiz from "./TableQuiz";
 import { Accordion } from "react-bootstrap";
+import { getAllQuizzesForAdmin } from "../../../../services/apiServices";
 
 const ManageQuiz = (props) => {
   const options = [
@@ -13,10 +14,22 @@ const ManageQuiz = (props) => {
     { value: "HARD", label: "HARD" },
   ];
 
+  const [listQuiz, setListQuiz] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState("");
   const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
+
+  const fetchQuiz = async () => {
+    let response = await getAllQuizzesForAdmin();
+    if (response && response.EC === 0) {
+      setListQuiz(response.DT);
+    }
+  };
 
   const handelChangeFile = (event) => {
     if (event.target && event.target.files && event.target.files[0]) {
@@ -44,6 +57,7 @@ const ManageQuiz = (props) => {
       setDescription("");
       setType("");
       setImage(null);
+      fetchQuiz();
     } else {
       toast.error(response.EM);
     }
@@ -115,10 +129,13 @@ const ManageQuiz = (props) => {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      
+
       <hr />
       <div className="list-detail">
-        <TableQuiz />
+        <TableQuiz
+          listQuiz={listQuiz}
+          fetchQuiz={fetchQuiz}
+        />
       </div>
     </div>
   );
