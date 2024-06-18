@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./ManageQuiz.scss";
 import Select from "react-select";
+import { postCreateNewQuiz } from "../../../../services/apiServices";
+import { toast } from "react-toastify";
 
 const ManageQuiz = (props) => {
   const options = [
@@ -11,11 +13,33 @@ const ManageQuiz = (props) => {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState("EASY");
+  const [type, setType] = useState("");
   const [image, setImage] = useState(null);
 
   const handelChangeFile = (event) => {
+    if (event.target && event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
+    }
+  };
 
+  const handleSubmitQuiz = async () => {
+    // validate
+    if (!name || !description || !type?.value || !image) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    let response = await postCreateNewQuiz(name, description, type?.value, image);
+   
+    if (response && response.EC === 0) {
+      toast.success(response.EM);
+      setName("");
+      setDescription("");
+      setType("");
+      setImage(null);
+    } else {
+      toast.error(response.EM);
+    }
   }
 
   return (
@@ -48,15 +72,29 @@ const ManageQuiz = (props) => {
             <label>Description</label>
           </div>
           <div className="form-floating my-3">
-            <Select options={options} placeholder="Quiz Type" value={type} />
+            <Select
+              options={options}
+              placeholder="Quiz Type"
+              value={type}
+              defaultValue={type}
+              onChange={setType}
+            />
           </div>
           <div className="more-actions form-group">
             <label htmlFor="uploadImage" className="form-label">
               Upload Image
             </label>
             <div className="input-group">
-              <input type="file" className="form-control" id="uploadImage" onChange={(event) => handelChangeFile(event)} />
+              <input
+                type="file"
+                className="form-control"
+                id="uploadImage"
+                onChange={(event) => handelChangeFile(event)}
+              />
             </div>
+          </div>
+          <div className="mt-3">
+            <button className="btn btn-primary" onClick={() => handleSubmitQuiz()}>Save</button>
           </div>
         </fieldset>
       </div>

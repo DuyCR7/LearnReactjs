@@ -27,6 +27,7 @@ const putUpdateUser = (id, username, role, image) => {
   return axios.put("api/v1/participant", data);
 };
 
+// dạng x-www-form-urlencoded
 const deleteUser = (id) => {
   return axios.delete("api/v1/participant", { data: { id: id } });
 };
@@ -63,6 +64,17 @@ const postSubmitQuiz = (data) => {
   return axios.post("api/v1/quiz-submit", {...data}); // dạng raw data
 }
 
+// POST Create new quiz
+const postCreateNewQuiz = (name, description, difficulty, quizImage) => {
+  const data = new FormData();
+  data.append("name", name);
+  data.append("description", description);
+  data.append("difficulty", difficulty);
+  data.append("quizImage", quizImage);
+
+  return axios.post("api/v1/quiz", data);
+}
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -73,5 +85,6 @@ export {
   postRegister,
   getQuizByUser,
   getDataQuiz,
-  postSubmitQuiz
+  postSubmitQuiz,
+  postCreateNewQuiz
 };
