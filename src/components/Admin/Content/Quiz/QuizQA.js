@@ -12,6 +12,7 @@ import {
   postCreateNewQuestionForQuiz,
   postCreateNewAnswerForQuestion,
   getQuizWithQA,
+  postUpserQA,
 } from "../../../../services/apiServices";
 import { toast } from "react-toastify";
 
@@ -98,18 +99,20 @@ const QuizQA = (props) => {
       .then((buf) => new File([buf], filename, { type: mimeType }));
   }
 
-  
-
   const fetchQuizzWithQA = async () => {
     let response = await getQuizWithQA(selectedQuiz.value);
     if (response && response.EC === 0) {
       // convert base64 to file Object
       let newQAs = [];
-      for(let i=0; i< response.DT.qa.length; i++) {
+      for (let i = 0; i < response.DT.qa.length; i++) {
         let q = response.DT.qa[i];
-        if(q.imageFile){
+        if (q.imageFile) {
           q.imageName = `Question-${q.id}.png`;
-          q.imageFile = await urltoFile(`data:image/png;base64,${q.imageFile}`, `Question-${q.id}.png`,'image/png');
+          q.imageFile = await urltoFile(
+            `data:image/png;base64,${q.imageFile}`,
+            `Question-${q.id}.png`,
+            "image/png"
+          );
         }
         newQAs.push(q);
       }
@@ -273,25 +276,39 @@ const QuizQA = (props) => {
 
     // Chạy theo trình tự, Promise.all() chạy song song
     // submit questions
-    for (const question of questions) {
-      const q = await postCreateNewQuestionForQuiz(
-        +selectedQuiz.value,
-        question.description,
-        question.imageFile
-      );
-      // submit answers
-      for (const answer of question.answers) {
-        await postCreateNewAnswerForQuestion(
-          answer.description,
-          answer.isCorrect,
-          q.DT.id
+
+    let questionsClone = _.cloneDeep(questions);
+    for (let i = 0; i < questionsClone.length; i++) {
+      if (questionsClone[i].imageFile) {
+        questionsClone[i].imageFile = await toBase64(
+          questionsClone[i].imageFile
         );
       }
     }
 
-    toast.success("Create questions and answers successfully");
-    setQuestions(initQuestions);
+    let response = await postUpserQA({
+      quizId: selectedQuiz.value,
+      questions: questionsClone
+    });
+
+    // console.log("Check question clone:", questionsClone);
+
+    if (response && response.EC === 0){
+      toast.success(response.EM);
+      fetchQuizzWithQA();
+    }
+
   };
+
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+
+    // console.log("Check question: ", questions);
 
   return (
     <div className="questions-container">
