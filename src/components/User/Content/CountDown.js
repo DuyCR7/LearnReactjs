@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 const CountDown = (props) => {
 
     const {onTimeUp} = props;
-    const [count, setCount] = useState(90);
+    const [count, setCount] = useState(300);
 
     useEffect(() => {
         if (count === 0){
+            alert('Quiz done!');
             onTimeUp();
             return;
         }
