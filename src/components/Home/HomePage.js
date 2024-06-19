@@ -29,7 +29,7 @@ const HomePage = (props) => {
             </button>
             :
             <button onClick={() => navigate('/users')}>
-              {t('homepage.title3.doingQuiz')}
+              {t('homepage.title3.doQuizNow')}
             </button>
           }
         </div>
